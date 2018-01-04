@@ -13,15 +13,19 @@ public class ZmqClient {
         // Prepare our context and subscriber
         Context context = ZMQ.context(1);
         Socket subscriber = context.socket(ZMQ.SUB);
-        Socket publisher = context.socket(ZMQ.REQ);
-
         subscriber.connect("tcp://localhost:5000");
-        publisher.connect("tcp://localhost:5000");
-        subscriber.subscribe("netherlands".getBytes());
+        subscriber.subscribe("EV00245".getBytes());
+
+        Socket publisher = context.socket(ZMQ.REQ);
+        publisher.connect("tcp://localhost:5500");
+
         while (!Thread.currentThread ().isInterrupted ()) {
             String contents = subscriber.recvStr ();
-            System.out.println(contents);
-            publisher.send("Yo!".getBytes(), 0);
+            System.out.println("Subscriber got "+ contents);
+            publisher.send(contents);
+            System.out.println("Publisher send "+ contents);
+            String response = publisher.recvStr ();
+            System.out.println("Publisher got response "+ response);
         }
         subscriber.close ();
         context.term ();
