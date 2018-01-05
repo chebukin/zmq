@@ -30,11 +30,12 @@ def pub(interval):
     context = zmq.Context()
     socket = context.socket(zmq.PUB)
     socket.bind(portPub)
-    events = ['EV00245', 'EV00246', 'EV00247', 'EV00248', 'EV00249']
-    params = ['123','124','125','126']
+    events = [b'EV00245', b'EV00246', b'EV00247', b'EV00248', b'EV00249']
+    params = [[123,1,2,3,4], [123,1,1,1], [123,1,2,1], [123,1,3,2]]
     while True:
-        msg = choice(events) + " " + choice(params) 
-        print 'PUB ->' ,msg
+        param = choice(params)
+        msg = choice(events) + msgpack.packb(param) 
+        print 'PUB ->' ,msg, str(param)
         socket.send( msg )
         time.sleep(interval)
 
